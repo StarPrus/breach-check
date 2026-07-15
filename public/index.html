@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="lt" data-theme="dark">
+<html lang="lt">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,9 +15,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="/styles.css">
-  <!-- Temos inicializacija prieš atvaizdavimą (be mirgėjimo).
-       Atskiras failas, kad CSP script-src 'self' veiktų be 'unsafe-inline'. -->
-  <script src="/theme-init.js"></script>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3l10 4v8c0 7-4.5 11.5-10 14C10.5 26.5 6 22 6 15V7l10-4z' fill='%23101823' stroke='%23E8A33D' stroke-width='2'/%3E%3Ccircle cx='16' cy='15' r='3.5' fill='%23E8A33D'/%3E%3C/svg%3E">
 </head>
 <body>
@@ -32,10 +29,6 @@
         </svg>
         <span class="brand-name">Ar&nbsp;nutekėjo?</span>
       </a>
-      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Perjungti tamsų / šviesų režimą">
-        <span class="theme-toggle-icon" aria-hidden="true"></span>
-        <span class="theme-toggle-label">Režimas</span>
-      </button>
     </div>
   </header>
 
