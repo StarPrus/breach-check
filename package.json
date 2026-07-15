@@ -1,0 +1,14 @@
+{
+  "name": "ar-nutekejo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "El. pašto duomenų nutekėjimų patikros svetainė (HIBP API, lietuvių kalba)",
+  "scripts": {
+    "dev": "vercel dev",
+    "dev:netlify": "netlify dev",
+    "deploy": "vercel --prod"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

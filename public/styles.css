@@ -1,0 +1,703 @@
+/* ==================================================================
+   Ar nutekėjo? — stiliai
+   ------------------------------------------------------------------
+   Dizaino sistema:
+   - Spalvos: gili plieno mėlyna („operacijų centras“) + gintaro
+     akcentas (signalinė lemputė). Rizikos skalė: žalia → geltona →
+     oranžinė → raudona.
+   - Šriftai: Sora (antraštės), IBM Plex Sans (tekstas),
+     IBM Plex Mono (duomenys: datos, skaičiai, adresai).
+   - Parašo elementas: „skenavimo konsolė“ su gintaro kampų žymomis
+     ir radaro animacija tikrinimo metu.
+   ================================================================== */
+
+/* ---------- Spalvų žetonai (tamsi tema — numatytoji) ---------- */
+:root,
+[data-theme="dark"] {
+  --bg: #0F1621;
+  --bg-raised: #151F2D;
+  --panel: #18232F;
+  --border: #273648;
+  --border-strong: #35485F;
+  --text: #DEE6EF;
+  --text-muted: #93A4B8;
+  --accent: #E8A33D;          /* gintaras */
+  --accent-soft: rgba(232, 163, 61, 0.14);
+  --accent-contrast: #10161F; /* tekstas ant gintaro */
+
+  --risk-zemas: #3FB27F;
+  --risk-vidutinis: #E3B341;
+  --risk-aukstas: #E07B39;
+  --risk-kritinis: #E05263;
+
+  --shadow: 0 8px 28px rgba(4, 10, 18, 0.45);
+  --radius: 10px;
+  --radius-sm: 6px;
+
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --bg: #F1F3F6;
+  --bg-raised: #FAFBFC;
+  --panel: #FFFFFF;
+  --border: #D8DFE7;
+  --border-strong: #B9C4D1;
+  --text: #1B2635;
+  --text-muted: #56687D;
+  --accent: #B27718;
+  --accent-soft: rgba(178, 119, 24, 0.10);
+  --accent-contrast: #FFFFFF;
+
+  --risk-zemas: #1F8A5D;
+  --risk-vidutinis: #9A7B14;
+  --risk-aukstas: #B85C1E;
+  --risk-kritinis: #BE3648;
+
+  --shadow: 0 6px 20px rgba(27, 38, 53, 0.10);
+  color-scheme: light;
+}
+
+/* ---------- Baziniai ---------- */
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: "Sora", "IBM Plex Sans", sans-serif;
+  line-height: 1.2;
+  margin: 0 0 0.5em;
+}
+
+.mono { font-family: "IBM Plex Mono", monospace; }
+
+.container {
+  width: min(880px, calc(100% - 2.5rem));
+  margin-inline: auto;
+}
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+a { color: var(--accent); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Antraštė ---------- */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-raised);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 0.75rem;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.brand-mark { width: 28px; height: 28px; color: var(--text-muted); }
+.brand-dot { fill: var(--accent); }
+
+.brand-name {
+  font-family: "Sora", sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.theme-toggle:hover { border-color: var(--border-strong); color: var(--text); }
+
+.theme-toggle-icon {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: inset -3px -2px 0 0 var(--bg);
+}
+
+[data-theme="light"] .theme-toggle-icon { box-shadow: none; }
+
+/* ---------- Hero / konsolė ---------- */
+.hero { padding: 4rem 0 3rem; }
+
+.eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 1rem;
+}
+
+.hero h1 {
+  font-size: clamp(1.7rem, 4.2vw, 2.6rem);
+  font-weight: 700;
+  max-width: 22ch;
+}
+
+.lede {
+  color: var(--text-muted);
+  max-width: 58ch;
+  margin: 0 0 2rem;
+}
+
+/* Parašo elementas: skenavimo konsolė su gintaro kampų žymomis */
+.scan-console {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.scan-console::before,
+.scan-console::after {
+  content: "";
+  position: absolute;
+  width: 18px; height: 18px;
+  border: 2px solid var(--accent);
+  pointer-events: none;
+}
+.scan-console::before { top: -2px; left: -2px; border-right: none; border-bottom: none; border-radius: var(--radius) 0 0 0; }
+.scan-console::after { bottom: -2px; right: -2px; border-left: none; border-top: none; border-radius: 0 0 var(--radius) 0; }
+
+.scan-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+#email-input {
+  flex: 1 1 260px;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 1rem;
+  padding: 0.8rem 1rem;
+}
+
+#email-input::placeholder { color: var(--text-muted); opacity: 0.7; }
+
+#email-input:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+#email-input.input-invalid { border-color: var(--risk-kritinis); }
+
+.btn-primary,
+.btn-secondary,
+.btn-ghost {
+  font: inherit;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1.6rem;
+  cursor: pointer;
+  transition: filter 120ms ease, background 120ms ease;
+}
+
+.btn-primary {
+  position: relative;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border: none;
+}
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-primary:disabled { opacity: 0.65; cursor: wait; }
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+.btn-ghost {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  text-decoration: underline;
+}
+.btn-ghost:hover { color: var(--text); }
+
+/* Mygtuko sukimosi indikatorius */
+.btn-spinner {
+  display: none;
+  width: 16px; height: 16px;
+  border: 2px solid rgba(0,0,0,0.25);
+  border-top-color: var(--accent-contrast);
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+  margin-left: 0.5rem;
+  vertical-align: -3px;
+}
+
+.is-loading .btn-spinner { display: inline-block; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.consent input {
+  margin-top: 0.25rem;
+  accent-color: var(--accent);
+  width: 16px; height: 16px;
+  flex: none;
+}
+
+.form-error {
+  margin: 0.85rem 0 0;
+  color: var(--risk-kritinis);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.privacy-note {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+  margin: 1.25rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.privacy-note svg { width: 18px; height: 18px; flex: none; margin-top: 2px; color: var(--risk-zemas); }
+
+/* ---------- Skenavimo būsena (radaras) ---------- */
+.loading-section {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.radar {
+  position: relative;
+  width: 110px; height: 110px;
+  margin: 0 auto 1.25rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 55%, var(--accent-soft) 100%);
+}
+
+.radar::before {
+  content: "";
+  position: absolute;
+  inset: 24px;
+  border: 1px dashed var(--border);
+  border-radius: 50%;
+}
+
+.radar-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, var(--accent-soft), transparent 90deg);
+  animation: sweep 1.6s linear infinite;
+}
+
+.radar-dot {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 8px; height: 8px;
+  margin: -4px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+}
+
+@keyframes sweep { to { transform: rotate(360deg); } }
+
+.loading-text {
+  color: var(--text-muted);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.9rem;
+}
+
+/* ---------- Rezultatai ---------- */
+.results-section {
+  padding-bottom: 2rem;
+  scroll-margin-top: 4.5rem; /* kad slenkant nepalįstų po prilipusia antrašte */
+}
+
+.demo-banner {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  font-size: 0.88rem;
+  margin-bottom: 1.25rem;
+}
+
+.summary-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--summary-accent, var(--risk-zemas));
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.summary-eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 0.4rem;
+}
+
+#summary-title { font-size: 1.35rem; margin-bottom: 0.3rem; }
+
+.summary-sub { color: var(--text-muted); margin: 0; font-size: 0.95rem; max-width: 46ch; }
+
+.summary-meta { display: flex; gap: 2rem; }
+
+.metric { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
+
+.metric-value { font-size: 1.6rem; font-weight: 600; }
+
+.metric-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.risk-badge {
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Rizikos spalvos */
+.risk-zemas    { background: color-mix(in srgb, var(--risk-zemas) 18%, transparent);    color: var(--risk-zemas); }
+.risk-vidutinis{ background: color-mix(in srgb, var(--risk-vidutinis) 18%, transparent);color: var(--risk-vidutinis); }
+.risk-aukstas  { background: color-mix(in srgb, var(--risk-aukstas) 18%, transparent);  color: var(--risk-aukstas); }
+.risk-kritinis { background: color-mix(in srgb, var(--risk-kritinis) 18%, transparent); color: var(--risk-kritinis); }
+
+.section-title {
+  font-size: 1.15rem;
+  margin: 0 0 1rem;
+}
+
+/* Incidentų kortelės */
+.breach-list { display: grid; gap: 0.9rem; margin-bottom: 2rem; }
+
+.breach-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.breach-card[open] { border-color: var(--border-strong); }
+
+.breach-summary {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.breach-summary::-webkit-details-marker { display: none; }
+
+.breach-rail {
+  width: 4px;
+  align-self: stretch;
+  border-radius: 2px;
+  flex: none;
+}
+.rail-zemas { background: var(--risk-zemas); }
+.rail-vidutinis { background: var(--risk-vidutinis); }
+.rail-aukstas { background: var(--risk-aukstas); }
+.rail-kritinis { background: var(--risk-kritinis); }
+
+.breach-head { flex: 1; min-width: 0; }
+
+.breach-name { font-family: "Sora", sans-serif; font-weight: 600; font-size: 1rem; }
+
+.breach-domain {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.breach-date {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.breach-chevron {
+  flex: none;
+  width: 10px; height: 10px;
+  border-right: 2px solid var(--text-muted);
+  border-bottom: 2px solid var(--text-muted);
+  transform: rotate(45deg);
+  transition: transform 150ms ease;
+}
+
+.breach-card[open] .breach-chevron { transform: rotate(-135deg); }
+
+.breach-body {
+  padding: 0 1.25rem 1.25rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.92rem;
+}
+
+.breach-body p { color: var(--text-muted); }
+
+.breach-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.fact-label {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 0.15rem;
+}
+
+.fact-value { font-family: "IBM Plex Mono", monospace; font-size: 0.88rem; }
+
+.data-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.35rem; }
+
+.data-tag {
+  font-size: 0.78rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+}
+
+.data-tag.tag-danger { border-color: var(--risk-kritinis); color: var(--risk-kritinis); }
+
+/* Rekomendacijos */
+.recs-list {
+  margin: 0 0 2rem;
+  padding: 0;
+  list-style: none;
+  counter-reset: rec;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.recs-list li {
+  counter-increment: rec;
+  display: flex;
+  gap: 0.85rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1rem;
+  font-size: 0.93rem;
+}
+
+.recs-list li::before {
+  content: counter(rec, decimal-leading-zero);
+  font-family: "IBM Plex Mono", monospace;
+  color: var(--accent);
+  font-weight: 500;
+  flex: none;
+}
+
+.recs-list li.rec-kritinis { border-left: 3px solid var(--risk-kritinis); }
+.recs-list li.rec-aukstas { border-left: 3px solid var(--risk-aukstas); }
+
+.results-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ---------- Klaidos ---------- */
+.error-section { padding: 2rem 0; }
+
+.error-card {
+  background: var(--panel);
+  border: 1px solid var(--risk-kritinis);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+
+.error-card h2 { color: var(--risk-kritinis); font-size: 1.2rem; }
+.error-card p { color: var(--text-muted); }
+
+/* ---------- Informacija ir DUK ---------- */
+.info-section { padding: 3rem 0 1rem; border-top: 1px solid var(--border); margin-top: 2rem; }
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  color: var(--text-muted);
+}
+
+.info-grid p { margin: 0; }
+
+.faq-section { padding: 2.5rem 0 3rem; }
+
+.faq-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  margin-bottom: 0.6rem;
+}
+
+.faq-item summary {
+  padding: 0.9rem 1.1rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  list-style: none;
+  position: relative;
+  padding-right: 2.5rem;
+}
+
+.faq-item summary::-webkit-details-marker { display: none; }
+
+.faq-item summary::after {
+  content: "+";
+  position: absolute;
+  right: 1.1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: "IBM Plex Mono", monospace;
+  color: var(--accent);
+  font-size: 1.1rem;
+}
+
+.faq-item[open] summary::after { content: "–"; }
+
+.faq-item p {
+  margin: 0;
+  padding: 0 1.1rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+/* ---------- Poraštė ---------- */
+.site-footer {
+  border-top: 1px solid var(--border);
+  background: var(--bg-raised);
+  padding: 2rem 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.disclaimer { max-width: 68ch; }
+
+.footer-links { margin: 0.75rem 0; display: flex; gap: 0.6rem; }
+
+.footer-copy { margin: 0.5rem 0 0; font-size: 0.8rem; }
+
+/* ---------- Mobilieji ---------- */
+@media (max-width: 560px) {
+  .hero { padding-top: 2.5rem; }
+  .scan-console { padding: 1.1rem; }
+  .btn-primary { width: 100%; }
+  .summary-meta { width: 100%; justify-content: space-around; }
+  .breach-date { display: none; }
+}
+
+/* ---------- Spausdinimas / PDF ataskaita ---------- */
+@media print {
+  .site-header, .theme-toggle, .hero, .loading-section, .error-section,
+  .results-actions, .faq-section, .info-section, .site-footer .footer-links {
+    display: none !important;
+  }
+
+  body { background: #fff; color: #111; }
+
+  .results-section { display: block !important; }
+
+  .summary-card, .breach-card, .recs-list li, .faq-item {
+    box-shadow: none;
+    border-color: #bbb;
+    background: #fff;
+    break-inside: avoid;
+  }
+
+  .breach-card .breach-body { display: block; }
+  details:not([open]) .breach-body { display: block; } /* atskleidžiame viską */
+}
