@@ -6,7 +6,6 @@
  * - Užklausa į /api/check (serverio tarpinį sluoksnį)
  * - Saugus rezultatų atvaizdavimas (tik textContent — jokio innerHTML
  *   su išoriniais duomenimis, apsauga nuo XSS)
- * - Tamsaus/šviesaus režimo perjungimas
  * - Ataskaitos spausdinimas / PDF
  * ------------------------------------------------------------------
  */
@@ -38,7 +37,6 @@ const recsList = document.getElementById('recs-list');
 const printButton = document.getElementById('print-button');
 const newCheckButton = document.getElementById('new-check-button');
 const retryButton = document.getElementById('retry-button');
-const themeToggle = document.getElementById('theme-toggle');
 
 // ---------- Tekstai ----------
 const RISK_LT = {
@@ -333,12 +331,4 @@ printButton.addEventListener('click', () => {
 });
 window.addEventListener('beforeprint', () => {
   document.querySelectorAll('.breach-card').forEach((d) => { d.open = true; });
-});
-
-// ---------- Temos perjungimas ----------
-themeToggle.addEventListener('click', () => {
-  const current = document.documentElement.getAttribute('data-theme');
-  const next = current === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  try { localStorage.setItem('ar-nutekejo-tema', next); } catch { /* ignoruojame */ }
 });
